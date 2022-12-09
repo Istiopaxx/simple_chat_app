@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { BaseRepository } from './base.repository';
 
 @Injectable()
-export class CommonService<Entity, CreateDto, UpdateDto> {
-  repository: any
-  constructor(repository: any) { 
+export class BaseService<Entity, CreateDto, UpdateDto> {
+  repository: any;
+  constructor(repository: BaseRepository<Entity, CreateDto, UpdateDto>) {
     this.repository = repository;
   }
 

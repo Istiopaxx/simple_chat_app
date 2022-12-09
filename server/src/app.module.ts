@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
 import { FileModule } from './file/file.module';
 import { ChatModule } from './chat/chat.module';
-import { CommonModule } from './common/common.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 
@@ -24,4 +23,4 @@ import { MongooseModule } from '@nestjs/mongoose';
     ChatModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

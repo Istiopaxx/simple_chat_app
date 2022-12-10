@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
+import { Model } from 'mongoose';
 
 @Injectable()
-export class CommonRepository<Entity, CreateDto, UpdateDto> {
-  model: any;
-  constructor(model: any) {
+export class BaseRepository<Entity, CreateDto, UpdateDto> {
+  model: Model<any>;
+  constructor(model: Model<any>) {
     this.model = model;
   }
 

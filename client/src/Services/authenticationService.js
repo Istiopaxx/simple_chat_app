@@ -27,16 +27,18 @@ export function useLogin() {
         };
 
         return fetch(
-            `${process.env.REACT_APP_API_URL}/users/login`,
+            `${process.env.REACT_APP_API_URL}/auth/login`,
             requestOptions
         )
             .then(handleResponse)
-            .then(user => {
+            .then(res => {
+                const { user, access_token } = res;
+                user.access_token = access_token;
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 currentUserSubject.next(user);
                 return user;
             })
-            .catch(function() {
+            .catch(function () {
                 enqueueSnackbar('Failed to Login', {
                     variant: 'error',
                 });
@@ -62,13 +64,15 @@ export function useRegister() {
             requestOptions
         )
             .then(handleResponse)
-            .then(user => {
+            .then(res => {
+                const { user, access_token } = res;
+                user.access_token = access_token;
                 localStorage.setItem('currentUser', JSON.stringify(user));
                 currentUserSubject.next(user);
 
                 return user;
             })
-            .catch(function(response) {
+            .catch(function (response) {
                 if (response) {
                     enqueueSnackbar(response, {
                         variant: 'error',

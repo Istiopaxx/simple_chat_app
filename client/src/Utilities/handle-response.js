@@ -14,6 +14,21 @@ const useHandleResponse = () => {
                         variant: 'error',
                     });
                 }
+                else if (response.status === 400) {
+                    enqueueSnackbar('Bad Request', {
+                        variant: 'error',
+                    });
+                }
+                else if (response.status === 404) {
+                    enqueueSnackbar('Not Found', {
+                        variant: 'error',
+                    });
+                }
+                else if (response.status >= 500) {
+                    enqueueSnackbar('Server Error', {
+                        variant: 'error',
+                    });
+                }
 
                 const error = (data && data.message) || response.statusText;
                 return Promise.reject(error);

@@ -1,5 +1,5 @@
 import { Socket } from 'socket.io';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user.service';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(forwardRef(() => UserService))
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -23,9 +24,9 @@ export class AuthService {
   }
 
   async login(user: User) {
-    console.log(user);
     const payload = { username: user.username, sub: user._id };
     return {
+      user,
       access_token: this.jwtService.sign(payload),
     };
   }

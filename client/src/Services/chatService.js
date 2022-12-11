@@ -1,136 +1,213 @@
 import useHandleResponse from '../Utilities/handle-response';
 import authHeader from '../Utilities/auth-header';
 import { useSnackbar } from 'notistack';
+import socketIOClient from 'socket.io-client';
 
 // Receive global messages
-export function useGetGlobalMessages() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
-    const requestOptions = {
-        method: 'GET',
-        headers: authHeader(),
-    };
+export function useGetGlobalMessageHistory() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  };
 
-    const getGlobalMessages = () => {
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/global`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(() =>
-                enqueueSnackbar('Could not load Global Chat', {
-                    variant: 'error',
-                })
-            );
-    };
+  const getGlobalMessages = () => {
+    // return fetch(
+    //     `${process.env.REACT_APP_API_URL}/chat/messages/global`,
+    //     requestOptions
+    // )
+    //     .then(handleResponse)
+    //     .catch(() =>
+    //         enqueueSnackbar('Could not load Global Chat', {
+    //             variant: 'error',
+    //         })
+    //     );
+    return Promise.resolve([
+      {
+        id: 1,
+        body: 'Hello',
+        from: {
+          id: 1,
+          username: 'John',
+          name: 'John',
+        },
+        date: new Date(),
+      },
+      {
+        id: 1,
+        body: 'Hello',
+        from: {
+          id: 1,
+          username: 'John',
+          name: 'John',
+        },
+        date: new Date(),
+      },
+      {
+        id: 1,
+        body: 'Hello',
+        from: {
+          id: 1,
+          username: 'John',
+          name: 'John',
+        },
+        date: new Date(),
+      },
+      {
+        id: 1,
+        body: 'Hello',
+        from: {
+          id: 1,
+          username: 'John',
+          name: 'John',
+        },
+        date: new Date(),
+      },
+    ]);
+  };
 
-    return getGlobalMessages;
+  return getGlobalMessages;
+}
+
+export function useGetGlobalNewMessage() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+
+  const getGlobalNewMessage = (socket, callback) => {
+    socket.on('message/global', (message) => {
+      callback(message);
+    });
+  }
+
+  return getGlobalNewMessage;
 }
 
 // Send a global message
 export function useSendGlobalMessage() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
 
-    const sendGlobalMessage = body => {
-        const requestOptions = {
-            method: 'POST',
-            headers: authHeader(),
-            body: JSON.stringify({ body: body, global: true }),
-        };
-
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/global`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(err => {
-                console.log(err);
-                enqueueSnackbar('Could send message', {
-                    variant: 'error',
-                });
-            });
-    };
-
-    return sendGlobalMessage;
+  const sendGlobalMessage = (socket, createMessageDto) => {
+    socket.emit('message/gloabal', createMessageDto, (res) => {
+      console.log(res);
+    });
+  };
+  return sendGlobalMessage;
 }
 
-// Get list of users conversations
-export function useGetConversations() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
-    const requestOptions = {
-        method: 'GET',
-        headers: authHeader(),
-    };
+// Get list of users Chats
+export function useGetChatRooms() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  };
 
-    const getConversations = () => {
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/conversations`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(() =>
-                enqueueSnackbar('Could not load chats', {
-                    variant: 'error',
-                })
-            );
-    };
+  const getChatRooms = () => {
+    // return fetch(
+    //     `${process.env.REACT_APP_API_URL}/chat/rooms`,
+    //     requestOptions
+    // )
+    //     .then(handleResponse)
+    //     .catch(() =>
+    //         enqueueSnackbar('Could not load chats', {
+    //             variant: 'error',
+    //         })
+    //     );
+    return Promise.resolve([
+      {
+        participants: [
+          {
+            id: 1,
+            username: 'John',
+            name: 'John',
+          }
+        ],
+        lastMessage: 'Hello',
+        id: 1,
+        date: new Date(),
+      },
+      {
+        participants: [
+          {
+            id: 1,
+            username: 'John',
+            name: 'John',
+          }
+        ],
+        lastMessage: 'Hello',
+        id: 1,
+        date: new Date(),
+      },
+      {
+        participants: [
+          {
+            id: 1,
+            username: 'John',
+            name: 'John',
+          }
+        ],
+        lastMessage: 'Hello',
+        id: 1,
+        date: new Date(),
+      }
+    ]);
+  };
 
-    return getConversations;
+  return getChatRooms;
 }
 
-// get conversation messages based on
+// get Chat messages based on
 // to and from id's
-export function useGetConversationMessages() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
-    const requestOptions = {
-        method: 'GET',
-        headers: authHeader(),
-    };
+export function useGetChatMessageHistory() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  };
 
-    const getConversationMessages = id => {
-        return fetch(
-            `${
-                process.env.REACT_APP_API_URL
-            }/messages/conversations/query?userId=${id}`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(() =>
-                enqueueSnackbar('Could not load chats', {
-                    variant: 'error',
-                })
-            );
-    };
+  const getChatMessages = roomId => {
+    return fetch(
+      `${process.env.REACT_APP_API_URL
+      }/chat/messages/${roomId}`,
+      requestOptions
+    )
+      .then(handleResponse)
+      .catch(() =>
+        enqueueSnackbar('Could not load chats', {
+          variant: 'error',
+        })
+      );
+  };
 
-    return getConversationMessages;
+  return getChatMessages;
 }
 
-export function useSendConversationMessage() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
+export function useGetChatNewMessage() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
 
-    const sendConversationMessage = (id, body) => {
-        const requestOptions = {
-            method: 'POST',
-            headers: authHeader(),
-            body: JSON.stringify({ to: id, body: body }),
-        };
+  const getChatNewMessage = (socket, callback) => {
+    socket.on('message', (message) => {
+      callback(message);
+    });
+  }
 
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(err => {
-                console.log(err);
-                enqueueSnackbar('Could send message', {
-                    variant: 'error',
-                });
-            });
-    };
+  return getChatNewMessage;
+}
 
-    return sendConversationMessage;
+export function useSendChatMessage() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+
+  const sendChatMessage = (socket, createMessageDto) => {
+    socket.emit('message', createMessageDto, (res) => {
+      console.log(res);
+    });
+  }
+
+  return sendChatMessage;
 }

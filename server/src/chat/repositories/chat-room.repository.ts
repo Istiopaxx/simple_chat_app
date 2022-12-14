@@ -19,7 +19,7 @@ export class ChatRoomRepository extends BaseRepository<
     return await this.chatRoomModel
       .find({
         participants: {
-          $elemMatch: userId,
+          $elemMatch: { $eq: userId },
         },
       })
       .exec();

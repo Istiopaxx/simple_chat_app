@@ -26,7 +26,10 @@ export class ChatMessageRepository {
     const createdPrivateMessage = new this.PrivateMessageModel(
       createPrivateMessageDto,
     );
-    return await createdPrivateMessage.save();
+    const message = await createdPrivateMessage.save();
+    return await this.PrivateMessageModel.findById(message._id)
+      .populate('from')
+      .exec();
   }
 
   async createGlobal(
@@ -35,7 +38,11 @@ export class ChatMessageRepository {
     const createdGlobalMessage = new this.globalMessageModel(
       createGlobalMessageDto,
     );
-    return await createdGlobalMessage.save();
+    const message = await createdGlobalMessage.save();
+    return await this.globalMessageModel
+      .findById(message._id)
+      .populate('from')
+      .exec();
   }
 
   async findAllPrivate(): Promise<PrivateMessage[]> {
@@ -43,14 +50,12 @@ export class ChatMessageRepository {
   }
 
   async findAllGlobal(): Promise<GlobalMessage[]> {
-    return await this.globalMessageModel.find().exec();
+    return await this.globalMessageModel.find().populate('from').exec();
   }
 
   async findMessagesByRoomId(chatRoomId) {
     return await this.PrivateMessageModel.find({
-      room: {
-        $elemMatch: chatRoomId,
-      },
+      room: chatRoomId,
     }).exec();
   }
 }

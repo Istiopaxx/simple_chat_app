@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 import {
   CreateGlobalMessageDto,
   CreatePrivateMessageDto,
 } from '../dto/create-message.dto';
-import { ChatMessageRepository } from '../repositorys/chat-messgae.repository';
+import { ChatMessageRepository } from '../repositories/chat-messgae.repository';
 
 @Injectable()
 export class ChatMessageService {
@@ -21,13 +21,13 @@ export class ChatMessageService {
   }
 
   async createAndSendGlobal(
-    client: Socket,
+    server: Server,
     createGlobalMessageDto: CreateGlobalMessageDto,
   ) {
     const chatMessage = await this.chatMessageRepository.createGlobal(
       createGlobalMessageDto,
     );
-    client.emit('ReceiveMessage', chatMessage);
+    server.emit('ReceiveMessage', chatMessage);
   }
 
   async getPrivateMessageList(chatRoomId: string) {

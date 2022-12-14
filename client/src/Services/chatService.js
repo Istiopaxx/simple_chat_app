@@ -80,13 +80,11 @@ export function useGetChatRooms() {
 }
 
 export function useCreateChatRoom() {
-  const createChatRoom = (socket, createChatRoomDto) => {
-    let ret = null;
+  const createChatRoom = (socket, createChatRoomDto, cb) => {
     socket.emit('CreatePrivateRoom', createChatRoomDto, (res) => {
       console.log(res);
-      ret = res;
+      cb(res);
     })
-    return ret;
   }
   return createChatRoom;
 }

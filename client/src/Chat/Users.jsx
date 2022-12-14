@@ -70,10 +70,12 @@ const Users = (props) => {
     const createChatRoomDto = {
       participants: [user._id, currentUserId],
     };
-    const room = createChatRoom(socket, createChatRoomDto);
-    props.setUser(user);
-    props.setScope(user.name);
-    props.setRoomId(room._id);
+    const cb = (room) => {
+      props.setUser(user);
+      props.setScope(user.name);
+      props.setRoomId(room._id);
+    };
+    createChatRoom(socket, createChatRoomDto, cb);
   };
 
   return (

@@ -45,21 +45,18 @@ export class ChatGateway implements OnGatewayConnection {
 
   @SubscribeMessage('SendPrivateMessage')
   async sendPrivateMessage(
-    @ConnectedSocket() client: Socket,
     @MessageBody() createPrivateMessageDto: CreatePrivateMessageDto,
   ) {
     await this.chatMessageService.createAndSendPrivate(
-      client,
+      this.server,
       createPrivateMessageDto,
     );
   }
 
   @SubscribeMessage('SendGlobalMessage')
   async sendGlobalMessage(
-    @ConnectedSocket() client: Socket,
     @MessageBody() createGlobalMessageDto: CreateGlobalMessageDto,
   ) {
-    console.log(this.server.sockets);
     await this.chatMessageService.createAndSendGlobal(
       this.server,
       createGlobalMessageDto,

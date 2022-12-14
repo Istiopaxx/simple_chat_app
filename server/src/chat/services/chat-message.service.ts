@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Socket, Server } from 'socket.io';
+import { Server } from 'socket.io';
 import {
   CreateGlobalMessageDto,
   CreatePrivateMessageDto,
@@ -11,13 +11,13 @@ export class ChatMessageService {
   constructor(private chatMessageRepository: ChatMessageRepository) {}
 
   async createAndSendPrivate(
-    client: Socket,
+    server: Server,
     createPrivateMessageDto: CreatePrivateMessageDto,
   ) {
     const chatMessage = await this.chatMessageRepository.createPrivate(
       createPrivateMessageDto,
     );
-    client.to(createPrivateMessageDto.room).emit('ReceiveMessage', chatMessage);
+    server.to(createPrivateMessageDto.room).emit('ReceiveMessage', chatMessage);
   }
 
   async createAndSendGlobal(

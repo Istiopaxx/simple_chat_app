@@ -56,6 +56,8 @@ export class ChatMessageRepository {
   async findMessagesByRoomId(chatRoomId: string) {
     return await this.PrivateMessageModel.find({
       room: chatRoomId,
-    }).exec();
+    })
+      .populate('from')
+      .exec();
   }
 }

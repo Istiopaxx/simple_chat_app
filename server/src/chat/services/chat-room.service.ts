@@ -1,8 +1,10 @@
-import { ChatRoomRepository } from '../repositorys/chat-room.repository';
+import { ChatRoomRepository } from '../repositories/chat-room.repository';
 import { ChatRoom } from '../entities/chat-room.entity';
 import { CreateChatRoomDto } from '../dto/create-chat-room.dto';
 import { Socket } from 'socket.io';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class ChatRoomService {
   constructor(private chatRoomRepository: ChatRoomRepository) {}
 

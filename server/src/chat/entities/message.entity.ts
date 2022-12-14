@@ -14,13 +14,13 @@ export class PrivateMessage {
   @Prop({ required: true, type: mongoSchema.Types.ObjectId, ref: 'ChatRoom' })
   room: mongoSchema.Types.ObjectId;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: mongoSchema.Types.ObjectId, ref: 'User' })
   from: mongoSchema.Types.ObjectId;
 
   @Prop({ required: true })
   content: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   createdAt: Date;
 }
 
@@ -31,13 +31,13 @@ export class GlobalMessage {
   @Prop({ required: true, auto: true, type: mongoSchema.Types.ObjectId })
   _id: Types.ObjectId;
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: mongoSchema.Types.ObjectId, ref: 'User' })
   from: mongoSchema.Types.ObjectId;
 
   @Prop({ required: true })
   content: string;
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   createdAt: Date;
 }
 

@@ -22,7 +22,8 @@ import {
   useSendChatMessage,
 } from '../Services/chatService';
 import { authenticationService } from '../Services/authenticationService';
-import io from 'socket.io-client';
+import { io } from 'socket.io-client';
+import authHeader from '../Utilities/auth-header';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -84,9 +85,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const ChatBox = ({ scope, user, roomId }) => {
-  const [currentUserId] = useState(
-    authenticationService.currentUserValue.userId
-  );
+  const [currentUserId] = useState(authenticationService.currentUserValue._id);
   const [newMessage, setNewMessage] = useState('');
   const [messages, setMessages] = useState([]);
 
@@ -99,7 +98,13 @@ const ChatBox = ({ scope, user, roomId }) => {
 
   let chatBottom = useRef(null);
   const classes = useStyles();
-  const socket = io();
+  const token = authHeader().Authorization;
+  const socket = io('http://localhost:8080', {
+    reconnectionDelayMax: 10000,
+    auth: {
+      token,
+    },
+  });
 
   const reloadMessages = () => {
     if (scope === 'Global Chat') {
@@ -121,9 +126,9 @@ const ChatBox = ({ scope, user, roomId }) => {
 
   useEffect(() => {
     if (scope === 'Global Chat') {
-      getGlobalNewMessage(appendMessage);
+      getGlobalNewMessage(socket, appendMessage);
     } else if (scope !== null && roomId !== null) {
-      getChatNewMessage(appendMessage);
+      getChatNewMessage(socket, appendMessage);
     } else {
       setMessages([]);
     }
@@ -146,12 +151,12 @@ const ChatBox = ({ scope, user, roomId }) => {
     const createMessageDto = {
       from: currentUserId,
       content: newMessage,
-      roomId,
+      room: scope === 'Global Chat' ? undefined : roomId,
     };
     if (scope === 'Global Chat') {
-      sendGlobalMessage(createMessageDto);
+      sendGlobalMessage(socket, createMessageDto);
     } else {
-      sendChatMessage(createMessageDto);
+      sendChatMessage(socket, createMessageDto);
     }
   };
 
@@ -191,7 +196,7 @@ const ChatBox = ({ scope, user, roomId }) => {
                         }),
                       }}
                       primary={m.from && m.from.name}
-                      secondary={<React.Fragment>{m.body}</React.Fragment>}
+                      secondary={<React.Fragment>{m.content}</React.Fragment>}
                     />
                   </ListItem>
                 ))}

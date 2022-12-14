@@ -40,7 +40,7 @@ export class ChatGateway implements OnGatewayConnection {
     @ConnectedSocket() client: Socket,
     @MessageBody() createChatRoomDto: CreateChatRoomDto,
   ) {
-    await this.chatRoomService.create(client, createChatRoomDto);
+    return await this.chatRoomService.create(client, createChatRoomDto);
   }
 
   @SubscribeMessage('SendPrivateMessage')

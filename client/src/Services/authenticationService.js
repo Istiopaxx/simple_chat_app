@@ -60,7 +60,7 @@ export function useRegister() {
         };
 
         return fetch(
-            `${process.env.REACT_APP_API_URL}/users/register`,
+            `${process.env.REACT_APP_API_URL}/users`,
             requestOptions
         )
             .then(handleResponse)

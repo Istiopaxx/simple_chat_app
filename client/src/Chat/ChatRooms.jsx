@@ -34,7 +34,6 @@ const useStyles = makeStyles((theme) => ({
 const ChatRooms = (props) => {
   const classes = useStyles();
   const [ChatRooms, setChatRooms] = useState([]);
-  const [newChatRoom, setNewChatRoom] = useState(null);
   const getChatRooms = useGetChatRooms();
 
   // Returns the recipient name that does not
@@ -53,16 +52,16 @@ const ChatRooms = (props) => {
 
   useEffect(() => {
     getChatRooms().then((res) => setChatRooms(res));
-  }, [newChatRoom]);
-
-  useEffect(() => {
-    let socket = socketIOClient(process.env.REACT_APP_API_URL);
-    socket.on('messages', (data) => setNewChatRoom(data));
-
-    return () => {
-      socket.removeListener('messages');
-    };
   }, []);
+
+  // useEffect(() => {
+  //   let socket = socketIOClient(process.env.REACT_APP_API_URL);
+  //   socket.on('messages', (data) => setNewChatRoom(data));
+
+  //   return () => {
+  //     socket.removeListener('messages');
+  //   };
+  // }, []);
 
   return (
     <List className={classes.list}>
@@ -91,6 +90,7 @@ const ChatRooms = (props) => {
               onClick={() => {
                 props.setUser(handleRecipient(c.participants));
                 props.setScope(handleRecipient(c.participants).name);
+                props.setRoomId(c._id);
               }}
             >
               <ListItemAvatar>
@@ -102,7 +102,7 @@ const ChatRooms = (props) => {
               </ListItemAvatar>
               <ListItemText
                 primary={handleRecipient(c.participants).name}
-                secondary={<React.Fragment>{c.lastMessage}</React.Fragment>}
+                // secondary={<React.Fragment>{c.lastMessage}</React.Fragment>}
               />
             </ListItem>
           ))}

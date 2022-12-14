@@ -36,6 +36,7 @@ const Chat = () => {
   const [scope, setScope] = useState('Global Chat');
   const [tab, setTab] = useState(0);
   const [user, setUser] = useState(null);
+  const [roomId, setRoomId] = useState(null);
   const classes = useStyles();
 
   const handleChange = (e, newVal) => {
@@ -60,12 +61,24 @@ const Chat = () => {
                 <Tab label="Users" />
               </Tabs>
             </Paper>
-            {tab === 0 && <ChatRooms setUser={setUser} setScope={setScope} />}
-            {tab === 1 && <Users setUser={setUser} setScope={setScope} />}
+            {tab === 0 && (
+              <ChatRooms
+                setUser={setUser}
+                setScope={setScope}
+                setRoomId={setRoomId}
+              />
+            )}
+            {tab === 1 && (
+              <Users
+                setUser={setUser}
+                setScope={setScope}
+                setRoomId={setRoomId}
+              />
+            )}
           </Paper>
         </Grid>
         <Grid item md={8}>
-          <ChatBox scope={scope} user={user} />
+          <ChatBox scope={scope} user={user} roomId={roomId} />
         </Grid>
       </Grid>
     </React.Fragment>

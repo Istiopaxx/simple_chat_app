@@ -53,7 +53,7 @@ export class ChatMessageRepository {
     return await this.globalMessageModel.find().populate('from').exec();
   }
 
-  async findMessagesByRoomId(chatRoomId) {
+  async findMessagesByRoomId(chatRoomId: string) {
     return await this.PrivateMessageModel.find({
       room: chatRoomId,
     }).exec();

@@ -5,10 +5,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import Avatar from '@material-ui/core/Avatar';
 import { makeStyles } from '@material-ui/core/styles';
-import socketIOClient from 'socket.io-client';
+import io from 'socket.io-client';
 
 import { useGetUsers } from '../Services/userService';
 import commonUtilites from '../Utilities/common';
+import { useCreateChatRoom } from '../Services/chatService';
+import { authenticationService } from '../Services/authenticationService';
+import authHeader from '../Utilities/auth-header';
 
 const useStyles = makeStyles((theme) => ({
   subheader: {
@@ -33,21 +36,31 @@ const useStyles = makeStyles((theme) => ({
 
 const Users = (props) => {
   const classes = useStyles();
+  const [currentUserId] = useState(authenticationService.currentUserValue._id);
   const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState(null);
   const getUsers = useGetUsers();
+  const createChatRoom = useCreateChatRoom();
+  const token = authHeader().Authorization;
+  const socket = io('http://localhost:8080', {
+    reconnectionDelayMax: 10000,
+    auth: {
+      token,
+    },
+  });
 
   useEffect(() => {
     getUsers().then((res) => setUsers(res));
-    console.log('users', users);
-  }, [newUser]);
-
-  useEffect(() => {
-    const socket = socketIOClient(process.env.REACT_APP_API_URL);
-    socket.on('users', (data) => {
-      setNewUser(data);
-    });
   }, []);
+
+  const handleUserOnClick = (user) => (e) => {
+    const createChatRoomDto = {
+      participants: [user._id, currentUserId],
+    };
+    const room = createChatRoom(socket, createChatRoomDto);
+    props.setUser(user);
+    props.setScope(user.name);
+    props.setRoomId(room._id);
+  };
 
   return (
     <List className={classes.list}>
@@ -57,10 +70,7 @@ const Users = (props) => {
             <ListItem
               className={classes.listItem}
               key={u._id}
-              onClick={() => {
-                props.setUser(u);
-                props.setScope(u.name);
-              }}
+              onClick={handleUserOnClick(u)}
               button
             >
               <ListItemAvatar className={classes.avatar}>

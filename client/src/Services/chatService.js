@@ -13,59 +13,17 @@ export function useGetGlobalMessageHistory() {
   };
 
   const getGlobalMessages = () => {
-    // return fetch(
-    //     `${process.env.REACT_APP_API_URL}/chat/messages/global`,
-    //     requestOptions
-    // )
-    //     .then(handleResponse)
-    //     .catch(() =>
-    //         enqueueSnackbar('Could not load Global Chat', {
-    //             variant: 'error',
-    //         })
-    //     );
-    return Promise.resolve([
-      {
-        id: 1,
-        body: 'Hello',
-        from: {
-          id: 1,
-          username: 'John',
-          name: 'John',
-        },
-        date: new Date(),
-      },
-      {
-        id: 1,
-        body: 'Hello',
-        from: {
-          id: 1,
-          username: 'John',
-          name: 'John',
-        },
-        date: new Date(),
-      },
-      {
-        id: 1,
-        body: 'Hello',
-        from: {
-          id: 1,
-          username: 'John',
-          name: 'John',
-        },
-        date: new Date(),
-      },
-      {
-        id: 1,
-        body: 'Hello',
-        from: {
-          id: 1,
-          username: 'John',
-          name: 'John',
-        },
-        date: new Date(),
-      },
-    ]);
-  };
+    return fetch(
+      `${process.env.REACT_APP_API_URL}/chat/globalMessage`,
+      requestOptions
+    )
+      .then(handleResponse)
+      .catch(() =>
+        enqueueSnackbar('Could not load Global Chat', {
+          variant: 'error',
+        })
+      );
+  }
 
   return getGlobalMessages;
 }
@@ -75,7 +33,7 @@ export function useGetGlobalNewMessage() {
   const handleResponse = useHandleResponse();
 
   const getGlobalNewMessage = (socket, callback) => {
-    socket.on('message/global', (message) => {
+    socket.on('ReceiveMessage', (message) => {
       callback(message);
     });
   }
@@ -89,7 +47,7 @@ export function useSendGlobalMessage() {
   const handleResponse = useHandleResponse();
 
   const sendGlobalMessage = (socket, createMessageDto) => {
-    socket.emit('message/gloabal', createMessageDto, (res) => {
+    socket.emit('SendGlobalMessage', createMessageDto, (res) => {
       console.log(res);
     });
   };
@@ -106,57 +64,31 @@ export function useGetChatRooms() {
   };
 
   const getChatRooms = () => {
-    // return fetch(
-    //     `${process.env.REACT_APP_API_URL}/chat/rooms`,
-    //     requestOptions
-    // )
-    //     .then(handleResponse)
-    //     .catch(() =>
-    //         enqueueSnackbar('Could not load chats', {
-    //             variant: 'error',
-    //         })
-    //     );
-    return Promise.resolve([
-      {
-        participants: [
-          {
-            id: 1,
-            username: 'John',
-            name: 'John',
-          }
-        ],
-        lastMessage: 'Hello',
-        id: 1,
-        date: new Date(),
-      },
-      {
-        participants: [
-          {
-            id: 1,
-            username: 'John',
-            name: 'John',
-          }
-        ],
-        lastMessage: 'Hello',
-        id: 1,
-        date: new Date(),
-      },
-      {
-        participants: [
-          {
-            id: 1,
-            username: 'John',
-            name: 'John',
-          }
-        ],
-        lastMessage: 'Hello',
-        id: 1,
-        date: new Date(),
-      }
-    ]);
-  };
+    return fetch(
+      `${process.env.REACT_APP_API_URL}/chat/chatRoom`,
+      requestOptions
+    )
+      .then(handleResponse)
+      .catch(() =>
+        enqueueSnackbar('Could not load chats', {
+          variant: 'error',
+        })
+      );
 
+  }
   return getChatRooms;
+}
+
+export function useCreateChatRoom() {
+  const createChatRoom = (socket, createChatRoomDto) => {
+    let ret = null;
+    socket.emit('CreatePrivateRoom', createChatRoomDto, (res) => {
+      console.log(res);
+      ret = res;
+    })
+    return ret;
+  }
+  return createChatRoom;
 }
 
 // get Chat messages based on
@@ -172,7 +104,7 @@ export function useGetChatMessageHistory() {
   const getChatMessages = roomId => {
     return fetch(
       `${process.env.REACT_APP_API_URL
-      }/chat/messages/${roomId}`,
+      }/chat/privateMessage/${roomId}`,
       requestOptions
     )
       .then(handleResponse)
@@ -191,7 +123,7 @@ export function useGetChatNewMessage() {
   const handleResponse = useHandleResponse();
 
   const getChatNewMessage = (socket, callback) => {
-    socket.on('message', (message) => {
+    socket.on('ReceiveMessage', (message) => {
       callback(message);
     });
   }
@@ -204,7 +136,7 @@ export function useSendChatMessage() {
   const handleResponse = useHandleResponse();
 
   const sendChatMessage = (socket, createMessageDto) => {
-    socket.emit('message', createMessageDto, (res) => {
+    socket.emit('SendPrivateMessage', createMessageDto, (res) => {
       console.log(res);
     });
   }

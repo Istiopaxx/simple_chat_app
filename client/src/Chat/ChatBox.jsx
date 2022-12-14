@@ -99,7 +99,7 @@ const ChatBox = ({ scope, user, roomId }) => {
   let chatBottom = useRef(null);
   const classes = useStyles();
   const token = authHeader().Authorization;
-  const socket = io('http://localhost:8080', {
+  const socket = io(process.env.REACT_APP_WS_URL, {
     reconnectionDelayMax: 10000,
     auth: {
       token,
@@ -148,6 +148,7 @@ const ChatBox = ({ scope, user, roomId }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!newMessage) return;
     const createMessageDto = {
       from: currentUserId,
       content: newMessage,
@@ -158,6 +159,7 @@ const ChatBox = ({ scope, user, roomId }) => {
     } else {
       sendChatMessage(socket, createMessageDto);
     }
+    setNewMessage('');
   };
 
   return (

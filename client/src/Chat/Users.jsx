@@ -41,7 +41,7 @@ const Users = (props) => {
   const getUsers = useGetUsers();
   const createChatRoom = useCreateChatRoom();
   const token = authHeader().Authorization;
-  const socket = io('http://localhost:8080', {
+  const socket = io(process.env.REACT_APP_WS_URL, {
     reconnectionDelayMax: 10000,
     auth: {
       token,

@@ -9,7 +9,7 @@ import io from 'socket.io-client';
 
 import { useGetUsers } from '../Services/userService';
 import commonUtilites from '../Utilities/common';
-import { useCreateChatRoom } from '../Services/chatService';
+import { useCreateChatRoom, useGetChatRooms } from '../Services/chatService';
 import { authenticationService } from '../Services/authenticationService';
 import authHeader from '../Utilities/auth-header';
 
@@ -38,7 +38,9 @@ const Users = (props) => {
   const classes = useStyles();
   const [currentUserId] = useState(authenticationService.currentUserValue._id);
   const [users, setUsers] = useState([]);
+  const [chatRooms, setChatRooms] = useState([]);
   const getUsers = useGetUsers();
+  const getChatRooms = useGetChatRooms();
   const createChatRoom = useCreateChatRoom();
   const token = authHeader().Authorization;
   const socket = io(process.env.REACT_APP_WS_URL, {
@@ -50,10 +52,21 @@ const Users = (props) => {
 
   useEffect(() => {
     getUsers().then((res) => setUsers(res));
+    getChatRooms().then((res) => setChatRooms(res));
   }, []);
 
   const handleUserOnClick = (user) => (e) => {
     if (user._id === currentUserId) return;
+    let flag = false;
+    chatRooms.some((r) => {
+      if (r.participants.some((u) => u._id === user._id)) {
+        props.setUser(user);
+        props.setScope(user.name);
+        props.setRoomId(r._id);
+        flag = true;
+      }
+    });
+    if (flag) return;
     const createChatRoomDto = {
       participants: [user._id, currentUserId],
     };

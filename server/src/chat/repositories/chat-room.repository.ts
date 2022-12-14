@@ -22,6 +22,7 @@ export class ChatRoomRepository extends BaseRepository<
           $elemMatch: { $eq: userId },
         },
       })
+      .populate('participants')
       .exec();
   }
 }

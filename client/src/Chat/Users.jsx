@@ -53,6 +53,7 @@ const Users = (props) => {
   }, []);
 
   const handleUserOnClick = (user) => (e) => {
+    if (user._id === currentUserId) return;
     const createChatRoomDto = {
       participants: [user._id, currentUserId],
     };

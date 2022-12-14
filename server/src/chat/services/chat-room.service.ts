@@ -18,6 +18,7 @@ export class ChatRoomService {
   }
 
   async joinAll(client: Socket, userId) {
+    client.leave(client.id);
     const roomList = await this.chatRoomRepository.findRoomByUserId(userId);
     roomList.forEach((room) => {
       client.join(room._id.toString());

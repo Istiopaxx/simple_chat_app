@@ -1,136 +1,143 @@
 import useHandleResponse from '../Utilities/handle-response';
 import authHeader from '../Utilities/auth-header';
 import { useSnackbar } from 'notistack';
+import socketIOClient from 'socket.io-client';
 
 // Receive global messages
-export function useGetGlobalMessages() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
-    const requestOptions = {
-        method: 'GET',
-        headers: authHeader(),
-    };
+export function useGetGlobalMessageHistory() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  };
 
-    const getGlobalMessages = () => {
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/global`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(() =>
-                enqueueSnackbar('Could not load Global Chat', {
-                    variant: 'error',
-                })
-            );
-    };
+  const getGlobalMessages = () => {
+    return fetch(
+      `${process.env.REACT_APP_API_URL}/chat/globalMessage`,
+      requestOptions
+    )
+      .then(handleResponse)
+      .catch(() =>
+        enqueueSnackbar('Could not load Global Chat', {
+          variant: 'error',
+        })
+      );
+  }
 
-    return getGlobalMessages;
+  return getGlobalMessages;
+}
+
+export function useGetGlobalNewMessage() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+
+  const getGlobalNewMessage = (socket, callback) => {
+    socket.on('ReceiveMessage', (message) => {
+      callback(message);
+    });
+  }
+
+  return getGlobalNewMessage;
 }
 
 // Send a global message
 export function useSendGlobalMessage() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
 
-    const sendGlobalMessage = body => {
-        const requestOptions = {
-            method: 'POST',
-            headers: authHeader(),
-            body: JSON.stringify({ body: body, global: true }),
-        };
-
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/global`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(err => {
-                console.log(err);
-                enqueueSnackbar('Could send message', {
-                    variant: 'error',
-                });
-            });
-    };
-
-    return sendGlobalMessage;
+  const sendGlobalMessage = (socket, createMessageDto) => {
+    socket.emit('SendGlobalMessage', createMessageDto, (res) => {
+      console.log(res);
+    });
+  };
+  return sendGlobalMessage;
 }
 
-// Get list of users conversations
-export function useGetConversations() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
-    const requestOptions = {
-        method: 'GET',
-        headers: authHeader(),
-    };
+// Get list of users Chats
+export function useGetChatRooms() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  };
 
-    const getConversations = () => {
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/conversations`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(() =>
-                enqueueSnackbar('Could not load chats', {
-                    variant: 'error',
-                })
-            );
-    };
+  const getChatRooms = () => {
+    return fetch(
+      `${process.env.REACT_APP_API_URL}/chat/chatRoom`,
+      requestOptions
+    )
+      .then(handleResponse)
+      .catch(() =>
+        enqueueSnackbar('Could not load chats', {
+          variant: 'error',
+        })
+      );
 
-    return getConversations;
+  }
+  return getChatRooms;
 }
 
-// get conversation messages based on
+export function useCreateChatRoom() {
+  const createChatRoom = (socket, createChatRoomDto, cb) => {
+    socket.emit('CreatePrivateRoom', createChatRoomDto, (res) => {
+      console.log(res);
+      cb(res);
+    })
+  }
+  return createChatRoom;
+}
+
+// get Chat messages based on
 // to and from id's
-export function useGetConversationMessages() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
-    const requestOptions = {
-        method: 'GET',
-        headers: authHeader(),
-    };
+export function useGetChatMessageHistory() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+  const requestOptions = {
+    method: 'GET',
+    headers: authHeader(),
+  };
 
-    const getConversationMessages = id => {
-        return fetch(
-            `${
-                process.env.REACT_APP_API_URL
-            }/messages/conversations/query?userId=${id}`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(() =>
-                enqueueSnackbar('Could not load chats', {
-                    variant: 'error',
-                })
-            );
-    };
+  const getChatMessages = roomId => {
+    return fetch(
+      `${process.env.REACT_APP_API_URL
+      }/chat/privateMessage/${roomId}`,
+      requestOptions
+    )
+      .then(handleResponse)
+      .catch(() =>
+        enqueueSnackbar('Could not load chats', {
+          variant: 'error',
+        })
+      );
+  };
 
-    return getConversationMessages;
+  return getChatMessages;
 }
 
-export function useSendConversationMessage() {
-    const { enqueueSnackbar } = useSnackbar();
-    const handleResponse = useHandleResponse();
+export function useGetChatNewMessage() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
 
-    const sendConversationMessage = (id, body) => {
-        const requestOptions = {
-            method: 'POST',
-            headers: authHeader(),
-            body: JSON.stringify({ to: id, body: body }),
-        };
+  const getChatNewMessage = (socket, callback) => {
+    socket.on('ReceiveMessage', (message) => {
+      callback(message);
+    });
+  }
 
-        return fetch(
-            `${process.env.REACT_APP_API_URL}/messages/`,
-            requestOptions
-        )
-            .then(handleResponse)
-            .catch(err => {
-                console.log(err);
-                enqueueSnackbar('Could send message', {
-                    variant: 'error',
-                });
-            });
-    };
+  return getChatNewMessage;
+}
 
-    return sendConversationMessage;
+export function useSendChatMessage() {
+  const { enqueueSnackbar } = useSnackbar();
+  const handleResponse = useHandleResponse();
+
+  const sendChatMessage = (socket, createMessageDto) => {
+    socket.emit('SendPrivateMessage', createMessageDto, (res) => {
+      console.log(res);
+    });
+  }
+
+  return sendChatMessage;
 }

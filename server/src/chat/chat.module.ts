@@ -1,5 +1,5 @@
-import { ChatRoomRepository } from './repositorys/chat-room.repository';
-import { ChatMessageRepository } from './repositorys/chat-messgae.repository';
+import { ChatRoomRepository } from './repositories/chat-room.repository';
+import { ChatMessageRepository } from './repositories/chat-messgae.repository';
 import { UserModule } from './../user/user.module';
 import { ChatRoomService } from './services/chat-room.service';
 import { ChatMessageService } from './services/chat-message.service';

@@ -17,7 +17,8 @@ export class ChatController {
   }
 
   @Get('/privateMessage/:chatRoomId')
-  async getPrivateMessageList(@Param() chatRoomId: string) {
+  async getPrivateMessageList(@Param('chatRoomId') chatRoomId: string) {
+    console.log(chatRoomId);
     return this.chatMessageService.getPrivateMessageList(chatRoomId);
   }
 

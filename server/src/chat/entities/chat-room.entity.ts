@@ -13,7 +13,7 @@ export class ChatRoom {
   @Prop({ required: true, type: [mongoSchema.Types.ObjectId], ref: 'User' })
   participants: Types.ObjectId[];
 
-  @Prop({ required: true })
+  @Prop({ required: false })
   createdAt: Date;
 }
 

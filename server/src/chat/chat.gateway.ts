@@ -16,7 +16,12 @@ import {
   CreatePrivateMessageDto,
 } from './dto/create-message.dto';
 
-@WebSocketGateway()
+@WebSocketGateway(8080, {
+  cors: {
+    origin: '*',
+  },
+  // transports: ['websocket'],
+})
 export class ChatGateway implements OnGatewayConnection {
   constructor(
     private chatMessageService: ChatMessageService,
@@ -35,27 +40,25 @@ export class ChatGateway implements OnGatewayConnection {
     @ConnectedSocket() client: Socket,
     @MessageBody() createChatRoomDto: CreateChatRoomDto,
   ) {
-    await this.chatRoomService.create(client, createChatRoomDto);
+    return await this.chatRoomService.create(client, createChatRoomDto);
   }
 
   @SubscribeMessage('SendPrivateMessage')
   async sendPrivateMessage(
-    @ConnectedSocket() client: Socket,
     @MessageBody() createPrivateMessageDto: CreatePrivateMessageDto,
   ) {
     await this.chatMessageService.createAndSendPrivate(
-      client,
+      this.server,
       createPrivateMessageDto,
     );
   }
 
   @SubscribeMessage('SendGlobalMessage')
   async sendGlobalMessage(
-    @ConnectedSocket() client: Socket,
     @MessageBody() createGlobalMessageDto: CreateGlobalMessageDto,
   ) {
     await this.chatMessageService.createAndSendGlobal(
-      client,
+      this.server,
       createGlobalMessageDto,
     );
   }
